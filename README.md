@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Fullstack StreamNest Clone
 
 <img src="Logo.jpeg" alt="Logo" width="400" height="400"/>
@@ -184,3 +185,6 @@ Running commands with npm: `npm run [command]`
 | Command | Description                              |
 | ------- | ---------------------------------------- |
 | dev     | Starts a development instance of the app |
+=======
+# StreamNest
+>>>>>>> 032fded9624eb1dcbd4cd8456b55be3ed398470c
