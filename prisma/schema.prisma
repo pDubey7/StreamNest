@@ -1,8 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 datasource db {
-  provider = "mongodb"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -11,30 +8,29 @@ generator client {
 }
 
 model User {
-  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  id             String   @id @default(uuid()) @map("_id")
   email          String   @unique
   username       String   @unique
-  imageUrl       String   @db.String
+  imageUrl       String?
   externalUserId String   @unique
-  bio            String?  @db.String
+  bio            String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
-  following      Follow[] @relation(name: "Following")
-  followedBy     Follow[] @relation(name: "FollowedBy")
-  blocking       Block[]  @relation(name: "Blocking")
-  blockedby      Block[]  @relation(name: "BlockedBy")
+  following      Follow[] @relation("Following")
+  followedBy     Follow[] @relation("FollowedBy")
+  blocking       Block[]  @relation("Blocking")
+  blockedBy      Block[]  @relation("BlockedBy")
   stream         Stream?
 }
 
 model Follow {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  follower    User     @relation(name: "Following", fields: [followerId], references: [id])
-  followerId  String   @db.ObjectId
-  following   User     @relation(name: "FollowedBy", fields: [followingId], references: [id])
-  followingId String   @db.ObjectId
+  id          String   @id @default(uuid()) @map("_id")
+  follower    User     @relation("Following", fields: [followerId], references: [id])
+  followerId  String
+  following   User     @relation("FollowedBy", fields: [followingId], references: [id])
+  followingId String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  userId      String?  @db.ObjectId
 
   @@unique([followerId, followingId])
   @@index([followerId])
@@ -42,12 +38,11 @@ model Follow {
 }
 
 model Block {
-  id        String @id @default(auto()) @map("_id") @db.ObjectId
-  blockerId String @db.ObjectId
-  blockedId String @db.ObjectId
-
-  blocker User @relation(name: "Blocking", fields: [blockerId], references: [id])
-  blocked User @relation(name: "BlockedBy", fields: [blockedId], references: [id])
+  id        String   @id @default(uuid()) @map("_id")
+  blocker   User     @relation("Blocking", fields: [blockerId], references: [id])
+  blockerId String
+  blocked   User     @relation("BlockedBy", fields: [blockedId], references: [id])
+  blockedId String
 
   @@unique([blockerId, blockedId])
   @@index([blockerId])
@@ -55,7 +50,7 @@ model Block {
 }
 
 model Stream {
-  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  id                  String   @id @default(uuid()) @map("_id")
   title               String
   thumbnail           String?
   ingressId           String?  @unique
@@ -65,7 +60,7 @@ model Stream {
   isChatEnabled       Boolean  @default(true)
   isChatDelayed       Boolean  @default(false)
   isChatFollowersOnly Boolean  @default(false)
-  userId              String   @unique @db.ObjectId
+  userId              String   @unique
   user                User     @relation(fields: [userId], references: [id])
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt

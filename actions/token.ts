@@ -1,8 +1,7 @@
 "use server";
 
-import { ObjectId } from "mongodb";
-
 import { AccessToken } from "livekit-server-sdk";
+import { v4 as uuidv4 } from "uuid";
 import { getSelf } from "@/lib/auth-service";
 import { getUserById } from "@/lib/user-service";
 import { isBlockedByUser } from "@/lib/block-service";
@@ -13,7 +12,7 @@ export const createViewerToken = async (hostIdentity: string) => {
   try {
     self = await getSelf();
   } catch {
-    const id = new ObjectId();
+    const id = uuidv4();  // Generate a UUID
     const username = `guest-${Math.floor(Math.random() * 100000)}`;
     self = { id, username };
   }
